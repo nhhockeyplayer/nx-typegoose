@@ -1,5 +1,5 @@
-import type * as mongoose from 'mongoose';
-import type { Severity, PropType } from './internal/constants';
+import type * as mongoose from 'mongoose'
+import type {PropType, Severity} from './internal/constants'
 
 /**
  * Get the Type of an instance of a Document with Class properties
@@ -26,7 +26,9 @@ export type AnyParamConstructor<T> = new (...args: any) => T;
 /**
  * The Type of a Model that gets returned by "getModelForClass" and "setModelForClass"
  */
-export type ReturnModelType<U extends AnyParamConstructor<any>, QueryHelpers = BeAnObject> = ModelType<InstanceType<U>, QueryHelpers> & U;
+export type ReturnModelType<U extends AnyParamConstructor<any>, QueryHelpers = BeAnObject> =
+  ModelType<InstanceType<U>, QueryHelpers>
+  & U;
 
 export type Func = (...args: any[]) => any;
 
@@ -103,6 +105,7 @@ export interface BasePropOptions {
    * @default true (Implicitly)
    */
   _id?: mongoose.SchemaTypeOptions<any>['_id'];
+
   /**
    * Set a Setter (Non-Virtual) to pre-process your value
    * (when using get/set both are required)
@@ -124,6 +127,7 @@ export interface BasePropOptions {
    * ```
    */
   set?(val: any): any;
+
   /**
    * Set a Getter (Non-Virtual) to Post-process your value
    * (when using get/set both are required)
@@ -145,6 +149,7 @@ export interface BasePropOptions {
    * ```
    */
   get?(val: any): any;
+
   /**
    * This may be needed if get/set is used
    * (this sets the type how it is saved to the DB)
@@ -263,14 +268,15 @@ export interface ArrayPropOptions extends BasePropOptions, InnerOuterOptions {
    * ```ts
    * new Model({ array: "string" });
    * // will be cast to equal
-   * new Model({ array: ["string"] });
+   * new Model({ array: ['string'] });
    * ```
    * @default true
    */
   castNonArrays?: boolean;
 }
 
-export interface MapPropOptions extends BasePropOptions, InnerOuterOptions {}
+export interface MapPropOptions extends BasePropOptions, InnerOuterOptions {
+}
 
 export interface ValidateNumberOptions {
   /** Only allow numbers that are higher than this */
@@ -357,12 +363,10 @@ export type RefType = mongoose.RefType;
 /**
  * Reference another Model
  */
-export type Ref<
-  PopulatedType,
+export type Ref<PopulatedType,
   RawId extends mongoose.RefType =
-    | (PopulatedType extends { _id?: mongoose.RefType } ? NonNullable<PopulatedType['_id']> : mongoose.Types.ObjectId)
-    | undefined
-> = mongoose.PopulatedDoc<PopulatedType, RawId>;
+      | (PopulatedType extends { _id?: mongoose.RefType } ? NonNullable<PopulatedType['_id']> : mongoose.Types.ObjectId)
+    | undefined> = mongoose.PopulatedDoc<PopulatedType, RawId>;
 
 /**
  * An Function type for a function that doesn't have any arguments and doesn't return anything
@@ -427,6 +431,7 @@ export interface DecoratedPropertyMetadata {
   // TODO: for the next major version (10), change this name to "proptype" or "type"
   whatis?: PropType;
 }
+
 export type DecoratedPropertyMetadataMap = Map<string | symbol, DecoratedPropertyMetadata>;
 
 /**
@@ -502,11 +507,9 @@ export type AsQueryMethod<T extends (...args: any) => any> = (...args: Parameter
  *   return this.findOne({ _id: id });
  * }
  */
-export type QueryHelperThis<
-  T extends AnyParamConstructor<any>,
+export type QueryHelperThis<T extends AnyParamConstructor<any>,
   QueryHelpers,
-  S = DocumentType<T, QueryHelpers>
-> = mongoose.QueryWithHelpers<S | null, S, QueryHelpers>;
+  S = DocumentType<T, QueryHelpers>> = mongoose.QueryWithHelpers<S | null, S, QueryHelpers>;
 
 /**
  * Used for the Reflection of Query Methods

@@ -18,7 +18,7 @@ export function setGlobalOptions(options: IGlobalOptions) {
   // for (const key of Object.keys(options)) {
   //   globalOptions[key] = Object.assign({}, globalOptions[key], options[key])
   // }
-  MergeService.deepMerge(globalOptions, options, { clone: true })
+  MergeService.deepMerge(globalOptions, options, {clone: true})
 
   logger.info('new Global Options:', options)
 }

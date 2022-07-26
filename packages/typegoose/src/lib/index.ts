@@ -1,7 +1,7 @@
-import { DecoratorKeys } from './internal/constants';
-import { getName } from './internal/utils';
-import { logger } from './logSettings';
-import type { BeAnObject, IIndexArray, IndexOptions } from './types';
+import {DecoratorKeys} from './internal/constants'
+import {getName} from './internal/utils'
+import {logger} from './logSettings'
+import type {BeAnObject, IIndexArray, IndexOptions} from './types'
 
 /**
  * Defines an index (most likely compound) for this schema.
@@ -18,12 +18,12 @@ export function index<T extends BeAnObject = BeAnObject>(
   options?: IndexOptions<T>
 ): ClassDecorator {
   return (target: any) => {
-    logger.info('Adding "%o" Indexes to %s', { fields, options }, getName(target));
-    const indices: IIndexArray<any>[] = Array.from(Reflect.getMetadata(DecoratorKeys.Index, target) ?? []);
-    indices.push({ fields, options });
-    Reflect.defineMetadata(DecoratorKeys.Index, indices, target);
-  };
+    logger.info('Adding "%o" Indexes to %s', {fields, options}, getName(target))
+    const indices: IIndexArray<any>[] = Array.from(Reflect.getMetadata(DecoratorKeys.Index, target) ?? [])
+    indices.push({fields, options})
+    Reflect.defineMetadata(DecoratorKeys.Index, indices, target)
+  }
 }
 
 // Export it PascalCased
-export { index as Index };
+export {index as Index}

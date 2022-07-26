@@ -1,12 +1,12 @@
 // disable "no-unused" for this file, to keep hooks consistent (it has to be an inline-comment, because of an problem with eslint)
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import type { Aggregate, Query } from 'mongoose';
-import { DecoratorKeys } from './internal/constants';
-import { ExpectedTypeError } from './internal/errors';
-import { assertion, getName, isNullOrUndefined } from './internal/utils';
-import { logger } from './logSettings';
-import { mongoose } from './typegoose';
-import type { DocumentType, EmptyVoidFn, HookOptionsEither, IHooksArray } from './types';
+import type {Aggregate, Query} from 'mongoose'
+import {DecoratorKeys} from './internal/constants'
+import {ExpectedTypeError} from './internal/errors'
+import {assertion, getName, isNullOrUndefined} from './internal/utils'
+import {logger} from './logSettings'
+import {mongoose} from './typegoose'
+import type {DocumentType, EmptyVoidFn, HookOptionsEither, IHooksArray} from './types'
 
 type NumberOrDocumentOrDocumentArray<T> = number | DocumentType<T> | DocumentType<T>[];
 
@@ -36,7 +36,13 @@ type PostArrayWithError<T> = (error: Error, result: NumberOrDocumentOrDocumentAr
 type AggregateMethod = 'aggregate';
 type DocumentMethod = 'init' | 'validate' | 'save' | 'remove';
 type NumberMethod = 'count';
-type SingleMethod = 'findOne' | 'findOneAndRemove' | 'findOneAndUpdate' | 'findOneAndDelete' | 'deleteOne' | DocumentMethod;
+type SingleMethod =
+  'findOne'
+  | 'findOneAndRemove'
+  | 'findOneAndUpdate'
+  | 'findOneAndDelete'
+  | 'deleteOne'
+  | DocumentMethod;
 type MultipleMethod = 'find' | 'update' | 'deleteMany' | 'aggregate';
 type QueryMethod =
   | 'count'
@@ -65,32 +71,37 @@ interface Hooks {
   pre<T>(method: QMR | QMR[], fn: PreFnWithQuery<T>, options?: mongoose.SchemaPreOptions): ClassDecorator;
 
   post<T>(method: RegExp, fn: PostRegExpResponse<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
+
   post<T>(method: RegExp, fn: PostRegExpWithError<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
 
   post<T>(method: NumberMethod, fn: PostNumberResponse<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
+
   post<T>(method: NumberMethod, fn: PostNumberWithError<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
 
   post<T>(method: SingleMethod, fn: PostSingleResponse<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
+
   post<T>(method: SingleMethod, fn: PostSingleWithError<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
 
   post<T>(method: MultipleMethod, fn: PostMultipleResponse<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
+
   post<T>(method: MultipleMethod, fn: PostMultipleWithError<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
 
   post<T>(method: ModelMethod, fn: ModelPostFn<T> | PostMultipleResponse<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
 
   post<T>(method: QDM | QDM[], fn: PostArrayResponse<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
+
   post<T>(method: QDM | QDM[], fn: PostArrayWithError<T>, options?: mongoose.SchemaPostOptions): ClassDecorator;
 }
 
 // TSDoc for the hooks can't be added without adding it to *every* overload
 const hooks: Hooks = {
   pre(...args) {
-    return (target: any) => addToHooks(target, 'pre', args);
+    return (target: any) => addToHooks(target, 'pre', args)
   },
   post(...args) {
-    return (target: any) => addToHooks(target, 'post', args);
+    return (target: any) => addToHooks(target, 'post', args)
   },
-};
+}
 
 /**
  * Add a hook to the hooks Array
@@ -100,41 +111,41 @@ const hooks: Hooks = {
  */
 function addToHooks(target: any, hookType: 'pre' | 'post', args: any[]): void {
   // Convert Method to array if only a string is provided
-  const methods: QDM[] = Array.isArray(args[0]) ? args[0] : [args[0]];
-  const func: EmptyVoidFn = args[1];
-  const hookOptions: HookOptionsEither = args[2] ?? {};
+  const methods: QDM[] = Array.isArray(args[0]) ? args[0] : [args[0]]
+  const func: EmptyVoidFn = args[1]
+  const hookOptions: HookOptionsEither = args[2] ?? {}
 
-  assertion(typeof func === 'function', () => new ExpectedTypeError('fn', 'function', func));
+  assertion(typeof func === 'function', () => new ExpectedTypeError('fn', 'function', func))
   assertion(
     typeof hookOptions === 'object' && !isNullOrUndefined(hookOptions),
     () => new ExpectedTypeError('options', 'object / undefined', hookOptions)
-  );
+  )
 
   if (args.length > 3) {
-    logger.warn(`"addToHooks" parameter "args" has a length of over 3 (length: ${args.length})`);
+    logger.warn(`"addToHooks" parameter "args" has a length of over 3 (length: ${args.length})`)
   }
 
-  logger.info('Adding hooks for "[%s]" to "%s" as type "%s"', methods.join(','), getName(target), hookType);
+  logger.info('Adding hooks for "[%s]" to "%s" as type "%s"', methods.join(','), getName(target), hookType)
 
   for (const method of methods) {
     switch (hookType) {
       case 'post':
-        const postHooks: IHooksArray[] = Array.from(Reflect.getMetadata(DecoratorKeys.HooksPost, target) ?? []);
-        postHooks.push({ func, method, options: hookOptions });
-        Reflect.defineMetadata(DecoratorKeys.HooksPost, postHooks, target);
-        break;
+        const postHooks: IHooksArray[] = Array.from(Reflect.getMetadata(DecoratorKeys.HooksPost, target) ?? [])
+        postHooks.push({func, method, options: hookOptions})
+        Reflect.defineMetadata(DecoratorKeys.HooksPost, postHooks, target)
+        break
       case 'pre':
-        const preHooks: IHooksArray[] = Array.from(Reflect.getMetadata(DecoratorKeys.HooksPre, target) ?? []);
-        preHooks.push({ func, method, options: hookOptions });
-        Reflect.defineMetadata(DecoratorKeys.HooksPre, preHooks, target);
-        break;
+        const preHooks: IHooksArray[] = Array.from(Reflect.getMetadata(DecoratorKeys.HooksPre, target) ?? [])
+        preHooks.push({func, method, options: hookOptions})
+        Reflect.defineMetadata(DecoratorKeys.HooksPre, preHooks, target)
+        break
     }
   }
 }
 
-export const pre = hooks.pre;
-export const post = hooks.post;
+export const pre = hooks.pre
+export const post = hooks.post
 
 // Export it PascalCased
-export const Pre = hooks.pre;
-export const Post = hooks.post;
+export const Pre = hooks.pre
+export const Post = hooks.post
