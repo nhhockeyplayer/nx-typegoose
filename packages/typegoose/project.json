@@ -1,0 +1,50 @@
+{
+  "projectType": "library",
+  "sourceRoot": "packages/typegoose/src",
+  "prefix": "typegoose",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:package",
+      "outputs": [
+        "dist/packages/typegoose"
+      ],
+      "options": {
+        "project": "packages/typegoose/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "packages/typegoose/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "packages/typegoose/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "coverage/packages/typegoose"
+      ],
+      "options": {
+        "jestConfig": "packages/typegoose/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "packages/typegoose/**/*.ts",
+          "packages/typegoose/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": [
+    "domain:core",
+    "scope:shared",
+    "platform:node",
+    "type:orm"
+  ]
+}

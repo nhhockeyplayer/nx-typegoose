@@ -1,0 +1,29 @@
+name: Deploy Github Pages
+
+on:
+  push:
+    branches:
+      - 'master'
+    paths: # only run this deploy if an file in the following directories are changed
+      - 'docs/**'
+      - 'website/**'
+
+jobs:
+  website:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: Install & Build
+        run: bash ./ghPagesPre.sh
+      - name: Deploy to Github Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: . # the root, because the provided script already moves files
+          git-config-name: github-pages-deploy # Set a Different name for the commit in "gh-pages" branch than the commiter itself
+          git-config-email: ''
