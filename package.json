@@ -147,5 +147,39 @@
   },
   "workspaces": [
     "packages/**"
-  ]
+  ],
+
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged",
+      "pre-push": "yarn format:write"
+    }
+  },
+  "lint-staged": {
+    "nx.json": [
+      "yarn nxpm-stack lint",
+      "yarn format:write"
+    ],
+    "*.scss": [
+      "prettier --write"
+    ],
+    "*.(ts|html)": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.(json|md|mdx|yaml|yml)": [
+      "prettier --write"
+    ]
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "website/**/*"
+    ],
+    "testMatch": [
+      "**/!(*.)+(test).[t]s"
+    ],
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ]
+  }
 }

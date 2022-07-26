@@ -3,19 +3,27 @@
   "compilerOptions": {
     "rootDir": ".",
     "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
+    "target": "es6",
     "lib": [
-      "es2017",
-      "dom"
+      "esnext"
     ],
+    "removeComments": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "newLine": "LF",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "allowJs": false,
+    "outDir": "build",
+    "inlineSourceMap": true,
+    "importHelpers": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
+    "suppressImplicitAnyIndexErrors": true,
     "baseUrl": ".",
     "paths": {
       "@typegoose/typegoose": [
@@ -26,5 +34,15 @@
   "exclude": [
     "node_modules",
     "tmp"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "strictTemplates": false,
+    "strictInjectionParameters": false,
+    "strictOutputEventTypes": false,
+    "strictInputAccessModifiers": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "noImplicitReturns": false,
+    "experimentalModules": true
+  }
 }

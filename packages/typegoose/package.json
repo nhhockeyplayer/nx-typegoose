@@ -2,10 +2,18 @@
   "name": "@typegoose/typegoose",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^14.0.0",
-    "@angular/core": "^14.0.0"
+    "mongoose": "~6.2.3"
   },
   "dependencies": {
     "tslib": "^2.3.0"
+  },
+  "engines": {
+    "node": ">=12.22.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./lib/esm/typegoose.js",
+      "require": "./lib/typegoose.js"
+    }
   }
 }
