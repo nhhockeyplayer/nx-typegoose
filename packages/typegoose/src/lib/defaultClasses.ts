@@ -1,14 +1,14 @@
-import type {Types} from 'mongoose'
-import {modelOptions} from './modelOptions'
-import type {AnyParamConstructor, DocumentType, RefType} from './types'
+import type { Types } from 'mongoose';
+import { modelOptions } from './modelOptions';
+import type { AnyParamConstructor, DocumentType, RefType } from './types';
 
-@modelOptions({schemaOptions: {timestamps: true}})
+@modelOptions({ schemaOptions: { timestamps: true } })
 /**
  * This class can be used for already existing type information for the Timestamps
  */
 export abstract class TimeStamps {
-  public createdAt?: Date
-  public updatedAt?: Date
+  public createdAt?: Date;
+  public updatedAt?: Date;
 }
 
 /**
@@ -35,5 +35,5 @@ export abstract class FindOrCreate {
     this: AnyParamConstructor<T>,
     condition: any,
     createWith?: any
-  ) => Promise<FindOrCreateResult<T>>
+  ) => Promise<FindOrCreateResult<T>>;
 }

@@ -1,5 +1,5 @@
-import type * as mongoose from 'mongoose'
-import type {PropType, Severity} from './internal/constants'
+import type * as mongoose from 'mongoose';
+import type { PropType, Severity } from './internal/constants';
 
 /**
  * Get the Type of an instance of a Document with Class properties
@@ -11,14 +11,19 @@ import type {PropType, Severity} from './internal/constants'
  * const doc: DocumentType<ClassName> = await NameModel.create({});
  * ```
  */
-export type DocumentType<T, QueryHelpers = BeAnObject> = (T extends { _id: unknown }
+export type DocumentType<T, QueryHelpers = BeAnObject> = (T extends {
+  _id: unknown;
+}
   ? mongoose.Document<T['_id'], QueryHelpers> & T
   : mongoose.Document<any, QueryHelpers> & T) &
   IObjectWithTypegooseFunction;
 /**
  * Used Internally for ModelTypes
  */
-export type ModelType<T, QueryHelpers = BeAnObject> = mongoose.Model<DocumentType<T, QueryHelpers>, QueryHelpers>;
+export type ModelType<T, QueryHelpers = BeAnObject> = mongoose.Model<
+  DocumentType<T, QueryHelpers>,
+  QueryHelpers
+>;
 /**
  * Any-param Constructor
  */
@@ -26,9 +31,10 @@ export type AnyParamConstructor<T> = new (...args: any) => T;
 /**
  * The Type of a Model that gets returned by "getModelForClass" and "setModelForClass"
  */
-export type ReturnModelType<U extends AnyParamConstructor<any>, QueryHelpers = BeAnObject> =
-  ModelType<InstanceType<U>, QueryHelpers>
-  & U;
+export type ReturnModelType<
+  U extends AnyParamConstructor<any>,
+  QueryHelpers = BeAnObject
+> = ModelType<InstanceType<U>, QueryHelpers> & U;
 
 export type Func = (...args: any[]) => any;
 
@@ -46,7 +52,9 @@ export type DeferredFunc<T = any> = (...args: unknown[]) => T;
  * Dynamic Functions, since mongoose 4.13
  * @param doc The Document current document
  */
-export type DynamicStringFunc<T extends AnyParamConstructor<any>> = (doc: DocumentType<T>) => string;
+export type DynamicStringFunc<T extends AnyParamConstructor<any>> = (
+  doc: DocumentType<T>
+) => string;
 
 /**
  * This Interface for most properties uses "mongoose.SchemaTypeOptions<any>['']", but for some special (or typegoose custom) options, it is not used
@@ -154,7 +162,10 @@ export interface BasePropOptions {
    * This may be needed if get/set is used
    * (this sets the type how it is saved to the DB)
    */
-  type?: DeferredFunc<AnyParamConstructor<any>> | DeferredFunc<unknown> | unknown;
+  type?:
+    | DeferredFunc<AnyParamConstructor<any>>
+    | DeferredFunc<unknown>
+    | unknown;
   /**
    * Make a property read-only
    * @example
@@ -186,7 +197,10 @@ export interface BasePropOptions {
   // eslint-disable-next-line @typescript-eslint/ban-types
   autopopulate?: boolean | Function | KeyStringAny;
   /** Reference an other Document (you should use Ref<T> as Prop type) */
-  ref?: DeferredFunc<string | AnyParamConstructor<any> | DynamicStringFunc<any>> | string | AnyParamConstructor<any>;
+  ref?:
+    | DeferredFunc<string | AnyParamConstructor<any> | DynamicStringFunc<any>>
+    | string
+    | AnyParamConstructor<any>;
   /** Take the Path and try to resolve it to a Model */
   refPath?: string;
   /**
@@ -196,7 +210,9 @@ export interface BasePropOptions {
    *
    * Note: Custom Typegoose Option
    */
-  discriminators?: DeferredFunc<(AnyParamConstructor<any> | DiscriminatorObject)[]>;
+  discriminators?: DeferredFunc<
+    (AnyParamConstructor<any> | DiscriminatorObject)[]
+  >;
   /**
    * Use option {@link BasePropOptions.type}
    * @see https://typegoose.github.io/typegoose/docs/api/decorators/prop#map-options
@@ -275,8 +291,7 @@ export interface ArrayPropOptions extends BasePropOptions, InnerOuterOptions {
   castNonArrays?: boolean;
 }
 
-export interface MapPropOptions extends BasePropOptions, InnerOuterOptions {
-}
+export interface MapPropOptions extends BasePropOptions, InnerOuterOptions {}
 
 export interface ValidateNumberOptions {
   /** Only allow numbers that are higher than this */
@@ -356,17 +371,23 @@ export interface VirtualOptions {
 }
 
 export type PropOptionsForNumber = BasePropOptions & ValidateNumberOptions;
-export type PropOptionsForString = BasePropOptions & TransformStringOptions & ValidateStringOptions;
+export type PropOptionsForString = BasePropOptions &
+  TransformStringOptions &
+  ValidateStringOptions;
 
 export type RefType = mongoose.RefType;
 
 /**
  * Reference another Model
  */
-export type Ref<PopulatedType,
+export type Ref<
+  PopulatedType,
   RawId extends mongoose.RefType =
-      | (PopulatedType extends { _id?: mongoose.RefType } ? NonNullable<PopulatedType['_id']> : mongoose.Types.ObjectId)
-    | undefined> = mongoose.PopulatedDoc<PopulatedType, RawId>;
+    | (PopulatedType extends { _id?: mongoose.RefType }
+        ? NonNullable<PopulatedType['_id']>
+        : mongoose.Types.ObjectId)
+    | undefined
+> = mongoose.PopulatedDoc<PopulatedType, RawId>;
 
 /**
  * An Function type for a function that doesn't have any arguments and doesn't return anything
@@ -432,7 +453,10 @@ export interface DecoratedPropertyMetadata {
   whatis?: PropType;
 }
 
-export type DecoratedPropertyMetadataMap = Map<string | symbol, DecoratedPropertyMetadata>;
+export type DecoratedPropertyMetadataMap = Map<
+  string | symbol,
+  DecoratedPropertyMetadata
+>;
 
 /**
  * copy-paste from mongodb package (should be same as IndexOptions from 'mongodb')
@@ -497,7 +521,9 @@ export type VirtualPopulateMap = Map<string, any & VirtualOptions>;
  * type SendMessageManualType = (recipient: string, sender: string, priority: number, retryIfFails: boolean) => boolean;
  * ```
  */
-export type AsQueryMethod<T extends (...args: any) => any> = (...args: Parameters<T>) => ReturnType<T>;
+export type AsQueryMethod<T extends (...args: any) => any> = (
+  ...args: Parameters<T>
+) => ReturnType<T>;
 
 /**
  * Helper type to easily set the `this` type in a QueryHelper function
@@ -507,9 +533,11 @@ export type AsQueryMethod<T extends (...args: any) => any> = (...args: Parameter
  *   return this.findOne({ _id: id });
  * }
  */
-export type QueryHelperThis<T extends AnyParamConstructor<any>,
+export type QueryHelperThis<
+  T extends AnyParamConstructor<any>,
   QueryHelpers,
-  S = DocumentType<T, QueryHelpers>> = mongoose.QueryWithHelpers<S | null, S, QueryHelpers>;
+  S = DocumentType<T, QueryHelpers>
+> = mongoose.QueryWithHelpers<S | null, S, QueryHelpers>;
 
 /**
  * Used for the Reflection of Query Methods
@@ -530,7 +558,9 @@ export type QueryMethodMap = Map<string, Func>;
 export type NestedDiscriminatorsMap = Map<string, DiscriminatorObject[]>;
 
 /** A Helper type to combine both mongoose Hook Option types */
-export type HookOptionsEither = mongoose.SchemaPreOptions | mongoose.SchemaPostOptions;
+export type HookOptionsEither =
+  | mongoose.SchemaPreOptions
+  | mongoose.SchemaPostOptions;
 
 /**
  * Used for the Reflection of Hooks

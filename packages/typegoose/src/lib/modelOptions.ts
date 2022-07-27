@@ -1,6 +1,6 @@
-import {DecoratorKeys} from './internal/constants'
-import {assignGlobalModelOptions, assignMetadata} from './internal/utils'
-import type {IModelOptions} from './types'
+import { DecoratorKeys } from './internal/constants';
+import { assignGlobalModelOptions, assignMetadata } from './internal/utils';
+import type { IModelOptions } from './types';
 
 /**
  * Define Options for the Class
@@ -15,10 +15,10 @@ import type {IModelOptions} from './types'
  */
 export function modelOptions(options: IModelOptions): ClassDecorator {
   return (target: any) => {
-    assignGlobalModelOptions(target)
-    assignMetadata(DecoratorKeys.ModelOptions, options, target)
-  }
+    assignGlobalModelOptions(target);
+    assignMetadata(DecoratorKeys.ModelOptions, options, target);
+  };
 }
 
 // Export it PascalCased
-export {modelOptions as ModelOptions}
+export { modelOptions as ModelOptions };

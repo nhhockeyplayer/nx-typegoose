@@ -4,9 +4,7 @@
     "rootDir": ".",
     "sourceMap": true,
     "target": "es6",
-    "lib": [
-      "esnext"
-    ],
+    "lib": ["esnext"],
     "removeComments": false,
     "module": "commonjs",
     "moduleResolution": "node",
@@ -26,15 +24,10 @@
     "suppressImplicitAnyIndexErrors": true,
     "baseUrl": ".",
     "paths": {
-      "@typegoose/typegoose": [
-        "packages/typegoose/src/index.ts"
-      ]
+      "@typegoose/typegoose": ["packages/typegoose/src/index.ts"]
     }
   },
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ],
+  "exclude": ["node_modules", "tmp"],
   "angularCompilerOptions": {
     "strictTemplates": false,
     "strictInjectionParameters": false,

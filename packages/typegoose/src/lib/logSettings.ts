@@ -1,7 +1,7 @@
-import * as logger from 'loglevel'
+import * as logger from 'loglevel';
 
-export {logger}
+export { logger };
 
-export const setLogLevel = logger.setLevel
-export const LogLevels = logger.levels
-logger.setDefaultLevel(LogLevels.WARN)
+export const setLogLevel = logger.setLevel;
+export const LogLevels = logger.levels;
+logger.setDefaultLevel(LogLevels.WARN);

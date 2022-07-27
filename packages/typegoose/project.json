@@ -41,6 +41,11 @@
       }
     }
   },
+  "cli": {
+    "cache": {
+      "enabled": false
+    }
+  },
   "tags": [
     "domain:core",
     "scope:shared",
