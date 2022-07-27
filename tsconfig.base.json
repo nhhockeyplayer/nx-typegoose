@@ -24,7 +24,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "baseUrl": ".",
     "paths": {
-      "@typegoose/typegoose": ["packages/typegoose/src/public_api"],
+      "@typegoose/typegoose": ["packages/typegoose/src/public_api.ts"],
       "@typegoose/typegoose/*": ["packages/typegoose/src/lib/*"]
     }
   },
