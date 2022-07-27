@@ -19,6 +19,9 @@
     ".": {
       "import": "./lib/typegoose.js",
       "require": "./lib/typegoose.js"
+    },
+    "./types.d.ts": {
+      "default": "./lib/types.js"
     }
   }
 }
