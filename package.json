@@ -181,5 +181,22 @@
     "extensionsToTreatAsEsm": [
       ".ts"
     ]
-  }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "typegoose",
+    "mongoose",
+    "orm",
+    "mongodb",
+    "class",
+    "model",
+    "schema",
+    "odm"
+  ],
+  "bugs": {
+    "url": "https://github.com/typegoose/typegoose/issues"
+  },
+  "homepage": "https://typegoose.github.io/typegoose/"
 }
