@@ -17,11 +17,12 @@
   },
   "exports": {
     ".": {
-      "import": "./lib/typegoose.js",
-      "require": "./lib/typegoose.js"
+      "import": "./src/public-api.mjs",
+      "require": "./src/public-api.js"
     },
-    "./types.d.ts": {
-      "default": "./lib/types.js"
+    "./distribution": {
+      "import": "./dist/packages/typegoose/public-api.mjs",
+      "require": "./dist/packages/typegoose/public-api.js"
     }
   }
 }
