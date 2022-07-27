@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "name": "@typegoose/typegoose",
   "version": "0.0.1",
   "peerDependencies": {
