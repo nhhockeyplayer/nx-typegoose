@@ -9,6 +9,6 @@
   ],
   "dest": "../../dist/packages/typegoose",
   "lib": {
-    "entryFile": "src/public-api.ts"
+    "entryFile": "src/lib/types.ts"
   }
 }

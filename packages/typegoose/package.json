@@ -2,11 +2,6 @@
   "type": "module",
   "name": "@typegoose/typegoose",
   "version": "0.0.1",
-  "main": "dist/packages/typegoose",
-  "types": "dist/packages/typegoose",
-  "files": [
-    "dist/packages/typegoose"
-  ],
   "peerDependencies": {
     "mongoose": "~6.2.3"
   },
@@ -19,17 +14,5 @@
   },
   "engines": {
     "node": ">=12.22.0"
-  },
-  "exports": {
-    ".": {
-      "default": "./src/public-api.ts",
-      "import": "./src/public-api.ts",
-      "require": "./src/public-api.ts"
-    },
-    "./public-api": {
-      "default": "./src/public-api.ts",
-      "import": "./dist/packges/typegoose/public-api.d.ts",
-      "require": "./dist/packges/typegoose/public-api.d.ts"
-    }
   }
 }

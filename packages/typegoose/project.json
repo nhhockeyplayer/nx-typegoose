@@ -1,10 +1,11 @@
 {
   "projectType": "library",
+  "root": "packages/typegoose",
   "sourceRoot": "packages/typegoose/src",
   "prefix": "typegoose",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:package",
+      "executor": "@nrwl/angular:ng-packagr-lite",
       "outputs": [
         "dist/packages/typegoose"
       ],

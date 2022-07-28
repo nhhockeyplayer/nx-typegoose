@@ -13,7 +13,7 @@ import type { BeAnObject, IIndexArray, IndexOptions } from './types';
  * class ClassName {}
  * ```
  */
-export function index<T extends BeAnObject = BeAnObject>(
+export function indexes<T extends BeAnObject = BeAnObject>(
   fields: Partial<Record<keyof T, string | -1 | 1>>,
   options?: IndexOptions<T>
 ): ClassDecorator {
@@ -32,4 +32,4 @@ export function index<T extends BeAnObject = BeAnObject>(
 }
 
 // Export it PascalCased
-export { index as Index };
+export { indexes as Index };
