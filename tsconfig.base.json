@@ -24,7 +24,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "baseUrl": ".",
     "paths": {
-      "@typegoose/typegoose": ["packages/typegoose/src/index.ts"]
+      "@typegoose/typegoose": ["packages/typegoose/src/lib/types.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"],
