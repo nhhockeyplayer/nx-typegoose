@@ -40,6 +40,16 @@
           "packages/typegoose/**/*.html"
         ]
       }
+    },
+    "post-distribution": {
+      "executor": "@nrwl/workspace:run-commands",
+      "options": {
+        "commands": [
+          {
+            "command": "source copy.zsh"
+          }
+        ]
+      }
     }
   },
   "cli": {

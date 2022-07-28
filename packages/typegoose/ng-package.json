@@ -10,5 +10,9 @@
   "dest": "../../dist/packages/typegoose",
   "lib": {
     "entryFile": "src/lib/types.ts"
-  }
+  },
+  "assets": [
+    "./src/public-api.ts",
+    "./src/lib/**/*.*"
+  ]
 }

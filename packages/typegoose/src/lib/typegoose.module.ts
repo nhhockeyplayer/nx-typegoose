@@ -1,10 +1,3 @@
-import {NgModule} from '@angular/core'
-import {CommonModule} from '@angular/common'
-
-@NgModule({
-  imports: [
-    CommonModule
-  ]
-})
-export class TypegooseModule {
+export function typegoose(): string {
+  return 'typegoose';
 }

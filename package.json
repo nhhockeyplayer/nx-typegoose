@@ -196,7 +196,7 @@
     "odm"
   ],
   "bugs": {
-    "url": "https://github.com/typegoose/typegoose/issues"
+    "url": "https://github.com/nhhockeyplayer/nx-typegoose/issues"
   },
-  "homepage": "https://typegoose.github.io/typegoose/"
+  "homepage": "https://nhhockeyplayer.github.io/nx-typegoose/"
 }

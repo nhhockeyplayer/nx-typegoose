@@ -2,6 +2,9 @@
   "type": "module",
   "name": "@typegoose/typegoose",
   "version": "0.0.1",
+  "scripts": {
+    "prepack": "mv dist/packages/typegoose/src/public-api.ts dist/packages/typegoose && mv dist/packages/typegoose/src/lib dist/packages/typegoose"
+  },
   "peerDependencies": {
     "mongoose": "~6.2.3"
   },

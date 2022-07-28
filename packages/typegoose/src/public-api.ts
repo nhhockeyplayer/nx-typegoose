@@ -14,7 +14,7 @@ export * from './lib/typegoose';
 export * from './lib/internal/data';
 export * from './lib/defaultClasses';
 export * from './lib/hooks';
-export * from './lib/typegoose.module';
 export * from './lib/indexes';
 export * from './lib/plugin';
 export * from './lib/internal/processProp';
+export * from './lib/typegoose.module';
