@@ -14,5 +14,12 @@
   },
   "engines": {
     "node": ">=12.22.0"
+  },
+  "exports": {
+    "./public-api": {
+      "default": "./src/public-api.ts",
+      "import": "./src/public-api.mjs",
+      "require": "./src/public-api.js"
+    }
   }
 }
