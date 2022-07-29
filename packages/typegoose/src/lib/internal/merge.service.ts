@@ -66,24 +66,18 @@ export class MergeService {
     // angular.forEach eslint not enforcable here, leave as-is... it works
     if (MergeService.isSpreadable(target)) {
       Object.keys(target).forEach((key) => {
-        destination[key] = MergeService.cloneIfNecessary(
-          target[key],
-          optionsArgument
-        )
+        // @ts-ignore
+        destination[key] = MergeService.cloneIfNecessary(target[key], optionsArgument)
       })
     }
     Object.keys(source).forEach((key) => {
+      // @ts-ignore
       if (!MergeService.isSpreadable(source[key]) || !target[key]) {
-        destination[key] = MergeService.cloneIfNecessary(
-          source[key],
-          optionsArgument
-        )
+        // @ts-ignore
+        destination[key] = MergeService.cloneIfNecessary(source[key], optionsArgument)
       } else {
-        destination[key] = MergeService.deepMerge(
-          target[key],
-          source[key],
-          optionsArgument
-        )
+        // @ts-ignore
+        destination[key] = MergeService.deepMerge(target[key], source[key], optionsArgument)
       }
     })
     return destination
@@ -184,6 +178,7 @@ export class MergeService {
         return p.indexOf(i) !== -1
       }) &&
       p.every((i) => {
+        // @ts-ignore
         return MergeService.deepEquals(x[i], y[i])
       })
     )

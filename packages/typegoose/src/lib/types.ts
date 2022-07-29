@@ -1,5 +1,5 @@
 import type * as mongoose from 'mongoose';
-import type { PropType, Severity } from './internal/constants';
+import type { Severity, PropType } from './internal/constants';
 
 /**
  * Get the Type of an instance of a Document with Class properties
@@ -11,38 +11,40 @@ import type { PropType, Severity } from './internal/constants';
  * const doc: DocumentType<ClassName> = await NameModel.create({});
  * ```
  */
-export type DocumentType<T, QueryHelpers = BeAnObject> = (T extends {
-  _id: unknown;
-}
-  ? mongoose.Document<T['_id'], QueryHelpers> & T
-  : mongoose.Document<any, QueryHelpers> & T) &
+export type DocumentType<T, QueryHelpers = BeAnObject> = (T extends { _id: unknown }
+  ? mongoose.Document<T['_id'], QueryHelpers, T>
+  : mongoose.Document<any, QueryHelpers, T>) &
+  T &
   IObjectWithTypegooseFunction;
+/**
+ * Get the Type of an instance of a SubDocument with Class properties
+ */
+export type SubDocumentType<T, QueryHelpers = BeAnObject> = DocumentType<T, QueryHelpers> & mongoose.Types.Subdocument;
+/**
+ * Get the Type of an instance of a SubDocument that exists within an array, with Class properties
+ */
+export type ArraySubDocumentType<T, QueryHelpers = BeAnObject> = DocumentType<T, QueryHelpers> & mongoose.Types.ArraySubdocument;
 /**
  * Used Internally for ModelTypes
  */
-export type ModelType<T, QueryHelpers = BeAnObject> = mongoose.Model<
-  DocumentType<T, QueryHelpers>,
-  QueryHelpers
->;
+export type ModelType<T, QueryHelpers = BeAnObject> = mongoose.Model<DocumentType<T, QueryHelpers>, QueryHelpers>;
 /**
  * Any-param Constructor
  */
 export type AnyParamConstructor<T> = new (...args: any) => T;
 /**
- * The Type of a Model that gets returned by "getModelForClass" and "setModelForClass"
+ * The Type for Models used in typegoose, mostly returned by "getModelForClass" and "addModelToTypegoose"
+ * @example
+ * const Model: ReturnModelType<typeof YourClass, YourClassQueryHelper> = mongoose.model("YourClass", YourClassSchema);
  */
-export type ReturnModelType<
-  U extends AnyParamConstructor<any>,
-  QueryHelpers = BeAnObject
-> = ModelType<InstanceType<U>, QueryHelpers> & U;
+export type ReturnModelType<U extends AnyParamConstructor<any>, QueryHelpers = BeAnObject> = ModelType<InstanceType<U>, QueryHelpers> & U;
 
+/** Generic "Function" type, because typescript does not like using "Function" directly in strict mode */
 export type Func = (...args: any[]) => any;
-
 /**
  * The Type of a function to generate a custom model name.
  */
 export type CustomNameFunction = (options: IModelOptions) => string;
-
 /**
  * Defer an reference with an function (or as other projects call it "Forward declaration")
  * @param type This is just to comply with the common pattern of `type => ActualType`
@@ -52,9 +54,7 @@ export type DeferredFunc<T = any> = (...args: unknown[]) => T;
  * Dynamic Functions, since mongoose 4.13
  * @param doc The Document current document
  */
-export type DynamicStringFunc<T extends AnyParamConstructor<any>> = (
-  doc: DocumentType<T>
-) => string;
+export type DynamicStringFunc<T extends AnyParamConstructor<any>> = (doc: DocumentType<T>) => string;
 
 /**
  * This Interface for most properties uses "mongoose.SchemaTypeOptions<any>['']", but for some special (or typegoose custom) options, it is not used
@@ -73,12 +73,18 @@ export interface BasePropOptions {
    */
   required?: mongoose.SchemaTypeOptions<any>['required'];
   /** Only accept Values from the Enum(|Array) */
-  enum?: string[] | BeAnObject;
+  enum?: mongoose.SchemaTypeOptions<any>['enum'];
   /**
    * Add "null" to the enum array
    * Note: Custom Typegoose Option
    */
   addNullToEnum?: boolean;
+  /**
+   * Set Custom "warnMixed" Severity for a specific property
+   * Overwrites Severity set in "modelOptions" for a specific property
+   * Note: Custom Typegoose Option
+   */
+  allowMixed?: Severity;
   /** Give the Property a default Value */
   default?: mongoose.SchemaTypeOptions<any>['default']; // i know this one does not have much of an effect, because of "any"
   /** Give an Validator RegExp or Function */
@@ -113,7 +119,6 @@ export interface BasePropOptions {
    * @default true (Implicitly)
    */
   _id?: mongoose.SchemaTypeOptions<any>['_id'];
-
   /**
    * Set a Setter (Non-Virtual) to pre-process your value
    * (when using get/set both are required)
@@ -134,8 +139,7 @@ export interface BasePropOptions {
    * }
    * ```
    */
-  set?(val: any): any;
-
+  set?: mongoose.SchemaTypeOptions<any>['set'];
   /**
    * Set a Getter (Non-Virtual) to Post-process your value
    * (when using get/set both are required)
@@ -156,16 +160,12 @@ export interface BasePropOptions {
    * }
    * ```
    */
-  get?(val: any): any;
-
+  get?: mongoose.SchemaTypeOptions<any>['get'];
   /**
    * This may be needed if get/set is used
    * (this sets the type how it is saved to the DB)
    */
-  type?:
-    | DeferredFunc<AnyParamConstructor<any>>
-    | DeferredFunc<unknown>
-    | unknown;
+  type?: DeferredFunc<AnyParamConstructor<any>> | DeferredFunc<unknown> | unknown;
   /**
    * Make a property read-only
    * @example
@@ -197,10 +197,7 @@ export interface BasePropOptions {
   // eslint-disable-next-line @typescript-eslint/ban-types
   autopopulate?: boolean | Function | KeyStringAny;
   /** Reference an other Document (you should use Ref<T> as Prop type) */
-  ref?:
-    | DeferredFunc<string | AnyParamConstructor<any> | DynamicStringFunc<any>>
-    | string
-    | AnyParamConstructor<any>;
+  ref?: DeferredFunc<string | AnyParamConstructor<any> | DynamicStringFunc<any>> | string | AnyParamConstructor<any>;
   /** Take the Path and try to resolve it to a Model */
   refPath?: string;
   /**
@@ -210,9 +207,7 @@ export interface BasePropOptions {
    *
    * Note: Custom Typegoose Option
    */
-  discriminators?: DeferredFunc<
-    (AnyParamConstructor<any> | DiscriminatorObject)[]
-  >;
+  discriminators?: DeferredFunc<(AnyParamConstructor<any> | DiscriminatorObject)[]>;
   /**
    * Use option {@link BasePropOptions.type}
    * @see https://typegoose.github.io/typegoose/docs/api/decorators/prop#map-options
@@ -266,6 +261,22 @@ export interface InnerOuterOptions {
   outerOptions?: KeyStringAny;
 }
 
+/**
+ * Internal type for `utils.mapOptions`
+ * @internal
+ */
+export interface MappedInnerOuterOptions {
+  /**
+   * Mapped options for the inner of the Type
+   */
+  inner: NonNullable<KeyStringAny>;
+  /**
+   * Mapped options for the outer of the type
+   */
+  outer: NonNullable<KeyStringAny>;
+}
+
+/** Options for Array's */
 export interface ArrayPropOptions extends BasePropOptions, InnerOuterOptions {
   /**
    * How many dimensions this Array should have
@@ -284,13 +295,14 @@ export interface ArrayPropOptions extends BasePropOptions, InnerOuterOptions {
    * ```ts
    * new Model({ array: "string" });
    * // will be cast to equal
-   * new Model({ array: ['string'] });
+   * new Model({ array: ["string"] });
    * ```
    * @default true
    */
   castNonArrays?: boolean;
 }
 
+/** Options For Map's */
 export interface MapPropOptions extends BasePropOptions, InnerOuterOptions {}
 
 export interface ValidateNumberOptions {
@@ -304,7 +316,7 @@ export interface ValidateNumberOptions {
 
 export interface ValidateStringOptions {
   /** Only allow values that match this RegExp */
-  match?: RegExp | [RegExp, string];
+  match?: mongoose.SchemaTypeOptions<any>['match'];
   /** Only allow Values from the enum */
   enum?: string[];
   /** Only allow values that have at least this length */
@@ -326,9 +338,9 @@ export interface VirtualOptions {
   /** Reference another Document (Ref<T> should be used as property type) */
   ref: NonNullable<BasePropOptions['ref']>;
   /** Which property(on the current-Class) to match `foreignField` against */
-  localField: string | DynamicStringFunc<any>;
+  localField: mongoose.VirtualTypeOptions['localField'];
   /** Which property(on the ref-Class) to match `localField` against */
-  foreignField: string | DynamicStringFunc<any>;
+  foreignField: mongoose.VirtualTypeOptions['foreignField'];
   /** Return as One Document(true) or as Array(false) */
   justOne?: mongoose.VirtualTypeOptions['justOne'];
   /** Return the number of Documents found instead of the actual Documents */
@@ -336,7 +348,7 @@ export interface VirtualOptions {
   /** Extra Query Options */
   options?: mongoose.VirtualTypeOptions['options'];
   /** Match Options */
-  match?: KeyStringAny | ((doc: any) => KeyStringAny);
+  match?: mongoose.VirtualTypeOptions['match'];
   /**
    * If you set this to `true`, Mongoose will call any custom getters you defined on this virtual.
    *
@@ -371,9 +383,7 @@ export interface VirtualOptions {
 }
 
 export type PropOptionsForNumber = BasePropOptions & ValidateNumberOptions;
-export type PropOptionsForString = BasePropOptions &
-  TransformStringOptions &
-  ValidateStringOptions;
+export type PropOptionsForString = BasePropOptions & TransformStringOptions & ValidateStringOptions;
 
 export type RefType = mongoose.RefType;
 
@@ -383,14 +393,12 @@ export type RefType = mongoose.RefType;
 export type Ref<
   PopulatedType,
   RawId extends mongoose.RefType =
-    | (PopulatedType extends { _id?: mongoose.RefType }
-        ? NonNullable<PopulatedType['_id']>
-        : mongoose.Types.ObjectId)
+    | (PopulatedType extends { _id?: mongoose.RefType } ? NonNullable<PopulatedType['_id']> : mongoose.Types.ObjectId)
     | undefined
 > = mongoose.PopulatedDoc<PopulatedType, RawId>;
 
 /**
- * An Function type for a function that doesn't have any arguments and doesn't return anything
+ * A Function type for a function that doesn't have any arguments and doesn't return anything
  */
 export type EmptyVoidFn = () => void;
 
@@ -416,6 +424,7 @@ export interface IModelOptions {
   options?: ICustomOptions;
 }
 
+/** Typegoose options, mostly for "modelOptions({ options: ICustomOptions })" */
 export interface ICustomOptions {
   /**
    * Set the modelName of the class.
@@ -441,6 +450,7 @@ export interface ICustomOptions {
   runSyncIndexes?: boolean;
 }
 
+/** Type for the Values stored in the Reflection for Properties */
 export interface DecoratedPropertyMetadata {
   /** Prop Options */
   options: any;
@@ -452,57 +462,45 @@ export interface DecoratedPropertyMetadata {
   // TODO: for the next major version (10), change this name to "proptype" or "type"
   whatis?: PropType;
 }
-
-export type DecoratedPropertyMetadataMap = Map<
-  string | symbol,
-  DecoratedPropertyMetadata
->;
+export type DecoratedPropertyMetadataMap = Map<string | symbol, DecoratedPropertyMetadata>;
 
 /**
  * copy-paste from mongodb package (should be same as IndexOptions from 'mongodb')
  */
-export interface IndexOptions<T> extends mongoose.IndexOptions {
-  /**
-   * Mongoose-specific syntactic sugar, uses ms to convert
-   * expires option into seconds for the expireAfterSeconds in the above link.
-   */
-  expires?: string;
-
-  weights?: Partial<Record<keyof T, number>>;
-}
+export type IndexOptions<_T> = mongoose.IndexOptions; // TODO: remove unused generic in typegoose 10
 
 /**
- * Used for the Reflection of Indexes
+ * Type for the Values stored in the Reflection for Indexes
  * @example
  * ```ts
  * const indices: IIndexArray[] = Reflect.getMetadata(DecoratorKeys.Index, target) || []);
  * ```
  */
-export interface IIndexArray<T> {
+export interface IIndexArray {
   fields: KeyStringAny;
-  options?: IndexOptions<T>;
+  options?: IndexOptions<unknown>;
 }
 
 /**
- * Used for the Reflection of Plugins
+ * Type for the Values stored in the Reflection for Plugins
  * @example
  * ```ts
- * const plugins: IPluginsArray<any>[] = Array.from(Reflect.getMetadata(DecoratorKeys.Plugins, target) ?? []);
+ * const plugins: IPluginsArray[] = Array.from(Reflect.getMetadata(DecoratorKeys.Plugins, target) ?? []);
  * ```
  */
-export interface IPluginsArray<T> {
+export interface IPluginsArray {
   mongoosePlugin: Func;
-  options: T;
+  options: BeAnObject | undefined;
 }
 
 /**
- * Used for the Reflection of Virtual Populates
+ * Type for the Values stored in the Reflection for Virtual Populates
  * @example
  * ```ts
  * const virtuals: VirtualPopulateMap = new Map(Reflect.getMetadata(DecoratorKeys.VirtualPopulate, target.constructor) ?? []);
  * ```
  */
-export type VirtualPopulateMap = Map<string, any & VirtualOptions>;
+export type VirtualPopulateMap = Map<string, VirtualOptions & Record<string, unknown>>;
 
 /**
  * Gets the signature (parameters with their types, and the return type) of a function type.
@@ -521,9 +519,7 @@ export type VirtualPopulateMap = Map<string, any & VirtualOptions>;
  * type SendMessageManualType = (recipient: string, sender: string, priority: number, retryIfFails: boolean) => boolean;
  * ```
  */
-export type AsQueryMethod<T extends (...args: any) => any> = (
-  ...args: Parameters<T>
-) => ReturnType<T>;
+export type AsQueryMethod<T extends (...args: any) => any> = (...args: Parameters<T>) => ReturnType<T>;
 
 /**
  * Helper type to easily set the `this` type in a QueryHelper function
@@ -540,7 +536,7 @@ export type QueryHelperThis<
 > = mongoose.QueryWithHelpers<S | null, S, QueryHelpers>;
 
 /**
- * Used for the Reflection of Query Methods
+ * Type for the Values stored in the Reflection for Query Methods
  * @example
  * ```ts
  * const queryMethods: QueryMethodMap = new Map(Reflect.getMetadata(DecoratorKeys.QueryMethod, target) ?? []);
@@ -549,7 +545,7 @@ export type QueryHelperThis<
 export type QueryMethodMap = Map<string, Func>;
 
 /**
- * Used for the Reflection of Nested Discriminators
+ * Type for the Values stored in the Reflection for Nested Discriminators
  * @example
  * ```ts
  * const disMap: NestedDiscriminatorsMap = new Map(Reflect.getMetadata(DecoratorKeys.NestedDiscriminators, target) ?? []);
@@ -558,12 +554,10 @@ export type QueryMethodMap = Map<string, Func>;
 export type NestedDiscriminatorsMap = Map<string, DiscriminatorObject[]>;
 
 /** A Helper type to combine both mongoose Hook Option types */
-export type HookOptionsEither =
-  | mongoose.SchemaPreOptions
-  | mongoose.SchemaPostOptions;
+export type HookOptionsEither = mongoose.SchemaPreOptions | mongoose.SchemaPostOptions;
 
 /**
- * Used for the Reflection of Hooks
+ * Type for the Values stored in the Reflection for Hooks
  * @example
  * ```ts
  * const postHooks: IHooksArray[] = Array.from(Reflect.getMetadata(DecoratorKeys.HooksPost, target) ?? []);
@@ -593,10 +587,15 @@ export interface IGlobalOptions {
   globalOptions?: BeAnObject;
 }
 
+/** Interface describing a Object that has a "typegooseName" Function */
 export interface IObjectWithTypegooseFunction {
   typegooseName(): string;
 }
 
+/**
+ * Interface describing a Object that has a "typegooseName" Value
+ * @deprecated This interface and value will be removed in typegoose 10, use {@link IObjectWithTypegooseFunction} instead
+ */
 export interface IObjectWithTypegooseName {
   typegooseName: string;
 }
@@ -606,10 +605,8 @@ export interface IPrototype {
   prototype?: any;
 }
 
-/** An Helper Interface for key: any: string */
-export interface KeyStringAny {
-  [key: string]: any;
-}
+/** An Helper Interface for defining a "key" index of "string" and "value" of "any" */
+export type KeyStringAny = Record<string, any>;
 
 /**
  * The Return Type of "utils.getType"
@@ -620,6 +617,7 @@ export interface GetTypeReturn {
 }
 
 /**
- * This type is for lint error "ban-types"
+ * This type is for lint error "ban-types" where "{}" would be used
+ * This type is seperate from "{@link KeyStringAny}" because it has a different meaning
  */
 export type BeAnObject = Record<string, any>;

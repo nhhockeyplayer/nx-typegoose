@@ -2,16 +2,11 @@ import type { Query } from 'mongoose';
 import { DecoratorKeys } from './internal/constants';
 import { getName } from './internal/utils';
 import { logger } from './logSettings';
-import type {
-  AnyParamConstructor,
-  QueryHelperThis,
-  QueryMethodMap,
-} from './types';
+import type { AnyParamConstructor, QueryHelperThis, QueryMethodMap } from './types';
 
 /**
- * Adds a query method to schema.
- *
- * @param func Query function
+ * Adds a query method to the Class which will then be added to the Schema.
+ * @param func The Query Method to add
  * @example
  * ```ts
  * interface FindHelpers {
@@ -32,16 +27,11 @@ import type {
  * ```
  */
 export function queryMethod<QueryHelpers, U extends AnyParamConstructor<any>>(
-  func: (
-    this: QueryHelperThis<U, QueryHelpers>,
-    ...params: any[]
-  ) => Query<any, any>
+  func: (this: QueryHelperThis<U, QueryHelpers>, ...params: any[]) => Query<any, any>
 ): ClassDecorator {
   return (target: any) => {
     logger.info('Adding query method "%s" to %s', func.name, getName(target));
-    const queryMethods: QueryMethodMap = new Map(
-      Reflect.getMetadata(DecoratorKeys.QueryMethod, target) ?? []
-    );
+    const queryMethods: QueryMethodMap = new Map(Reflect.getMetadata(DecoratorKeys.QueryMethod, target) ?? []);
     queryMethods.set(func.name, func);
     Reflect.defineMetadata(DecoratorKeys.QueryMethod, queryMethods, target);
   };

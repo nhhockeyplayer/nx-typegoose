@@ -1,10 +1,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
     "sourceMap": true,
+    "rootDir": ".",
     "target": "es6",
-    "lib": ["esnext"],
+    "lib": [
+      "esnext"
+    ],
     "removeComments": false,
     "module": "commonjs",
     "moduleResolution": "node",
@@ -19,10 +21,8 @@
     "strictBindCallApply": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "baseUrl": ".",
+    "baseUrl": "./",
+
     "paths": {
       "@typegoose/typegoose": ["packages/typegoose/src/lib/types.ts"]
     }
