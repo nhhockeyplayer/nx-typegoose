@@ -473,11 +473,11 @@ export function mapOptions(
   }
 
   /** The OptionsConstructor to use */
-  let OptionsCTOR: undefined | mongoose.SchemaTypeOptions<any> = Type?.prototype?.OptionsConstructor as AnyParamConstructor<any>;
+  let OptionsCTOR: any | undefined | mongoose.SchemaTypeOptions<any> = Type?.prototype?.OptionsConstructor as any;
 
   if (Type instanceof mongoose.Schema) {
     // error TS2322: Type 'SchemaTypeOptions<any>' is not assignable to type 'AnyParamConstructor<any>'.
-    OptionsCTOR = mongoose.Schema.Types.Subdocument.prototype.OptionsConstructor as AnyParamConstructor<any>;
+    OptionsCTOR = mongoose.Schema.Types.Subdocument.prototype.OptionsConstructor;
   }
 
   assertion(!isNullOrUndefined(OptionsCTOR), () => new InvalidOptionsConstructorError(getName(target), pkey, loggerType));
